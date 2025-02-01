@@ -24,3 +24,5 @@ while(GetMessage(&msg, NULL, 0, 0)){
 
     return (int)msg.wParam;
 }
+
+

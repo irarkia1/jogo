@@ -1,5 +1,6 @@
 //libs creat
 #include "windows.h"
+#include "areas.h"
 
 bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         const wchar_t CLASS_NAME[] = L"Teste janela";
@@ -11,12 +12,11 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         wc.lpszClassName = CLASS_NAME;
 
 
-    // if(!RegisterClassExW(&wc)){
-    //     //MessageBox(NULL, L"Falhar ao criar janela", L"Erro", MB_ICONERROR);
-    //      MessageBox(NULL, L"Falha ao registrar a classe da janela", L"Erro", MB_OK | MB_ICONERROR);
-    //     return 0;
-    // }
-    RegisterClassExW(&wc);
+    if(!RegisterClassExW(&wc)){
+         MessageBoxW(NULL, L"Falha ao registrar a classe da janela", L"Erro", MB_OK | MB_ICONERROR);
+        return 0;
+    }
+    
 
     hwnd = CreateWindowExW(
         0,
@@ -24,7 +24,7 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         L"ACREDITO SER JANELA",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        800,500,
+        800,600,
         NULL,
         NULL,
         hInstance,
@@ -45,9 +45,15 @@ HWND Windows::GetHandle(){
 
 LRESULT CALLBACK Windows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     switch (uMsg){
-        case WM_CLOSE:
+        case WM_PAINT:{
+            Areas areas;
+            areas.DesenharAreas(hwnd);
+            return 0;
+        }
+        case WM_CLOSE:{
             PostQuitMessage(0);
             return 0;
+            }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
