@@ -1,6 +1,8 @@
 //libs creat
 #include "windows.h"
-#include "areas.h"
+#include <iostream>
+
+
 
 bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         const wchar_t CLASS_NAME[] = L"Teste janela";
@@ -31,6 +33,11 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         NULL
     );
 
+    //Tirando a opção de redmencionar a tela
+    LONG style = GetWindowLong(hwnd, GWL_STYLE);
+    style &= ~WS_SIZEBOX;
+    SetWindowLong(hwnd, GWL_STYLE, style);
+    
     if(!hwnd){
         return false;
     }
@@ -46,14 +53,26 @@ HWND Windows::GetHandle(){
 LRESULT CALLBACK Windows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     switch (uMsg){
         case WM_PAINT:{
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            
             Areas areas;
-            areas.DesenharAreas(hwnd);
-            return 0;
+            areas.DesenharAreas(hwnd, hdc); 
+    
+            Players players;
+            players.CriarPlayers(hwnd, hdc);
+            
+            EndPaint(hwnd, &ps);
+            break;
+        }
+        case WM_CREATE:{
+            SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(255, 255, 255)));  // Definir fundo branco
+            break;
         }
         case WM_CLOSE:{
             PostQuitMessage(0);
             return 0;
-            }
+        }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

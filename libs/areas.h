@@ -6,9 +6,10 @@
 
 class Areas{
         public:
-            void DesenharAreas(HWND hwnd);
+            void DesenharAreas(HWND hwnd, HDC hdc);
         private:
             void PintarAreas(HDC hdc);
+
 
 };
 

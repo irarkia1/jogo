@@ -4,6 +4,7 @@
 //libs standard
 #include <windows.h>
 #include "areas.h"
+#include "players.h"
 
 
 class Windows{
