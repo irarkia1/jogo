@@ -1,7 +1,7 @@
 #ifndef WINDOWS_H
 #define WINDOWS_H
 
-//libs standard
+//libs create
 #include <windows.h>
 #include "areas.h"
 #include "players.h"

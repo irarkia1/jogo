@@ -1,5 +1,6 @@
 //libs creat
 #include "windows.h"
+//libs standard
 #include <iostream>
 
 
@@ -11,6 +12,7 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         wc.cbSize = sizeof(WNDCLASSEXW);
         wc.lpfnWndProc = WindowProc;
         wc.hInstance = hInstance;
+        wc.hCursor = LoadCursor(NULL, IDC_CROSS);
         wc.lpszClassName = CLASS_NAME;
 
 
@@ -33,7 +35,7 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
         NULL
     );
 
-    //Tirando a opção de redmencionar a tela
+    //Tirando a opcao de redmencionar a tela
     LONG style = GetWindowLong(hwnd, GWL_STYLE);
     style &= ~WS_SIZEBOX;
     SetWindowLong(hwnd, GWL_STYLE, style);
@@ -44,6 +46,7 @@ bool Windows::init(HINSTANCE hInstance, int nCmdShow){
 
     ShowWindow(hwnd, nCmdShow);
     return true;
+
 }
 
 HWND Windows::GetHandle(){
@@ -51,7 +54,13 @@ HWND Windows::GetHandle(){
 }
 
 LRESULT CALLBACK Windows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+    
+    static HDC hdcMem;
+    static HBITMAP hbmMem;
+    static HGDIOBJ hOldBmp;
+    
     switch (uMsg){
+        //ESTAMOS CRIANDO OS PLAYERS
         case WM_PAINT:{
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
@@ -65,10 +74,30 @@ LRESULT CALLBACK Windows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
             EndPaint(hwnd, &ps);
             break;
         }
+        //ESTAMOS FORNCANDO A COR DE FUNDO
         case WM_CREATE:{
             SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(255, 255, 255)));  // Definir fundo branco
             break;
         }
+        //controle do mouse  : coleta start X e Y
+        case WM_LBUTTONDOWN:{
+            PlayersMove playersMove;
+            playersMove.PtSrt(lParam);
+            break;
+        }
+        //pegando as marcacoes do mouse
+        case WM_MOUSEMOVE:{
+            PlayersMove playersMove;
+            playersMove.DraggingMouse(hwnd, lParam);
+            break;
+        }
+        //Quando solta o mouse : coleta End X e 
+        case WM_LBUTTONUP:{
+            PlayersMove playersMove;
+            playersMove.PtEnd(lParam, hwnd, hdcMem, hbmMem, hOldBmp);
+            break;
+        }
+        //liberar memoria 
         case WM_CLOSE:{
             PostQuitMessage(0);
             return 0;
